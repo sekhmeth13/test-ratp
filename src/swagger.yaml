@@ -1,0 +1,45 @@
+swagger: '2.0'
+info:
+    title: 'test-ratp-api'
+    description: 'API to retrieve stop infos by name'
+    version: '1.0.0'
+host: localhost:8000
+basePath: '/'
+schemes:
+    - 'http'
+paths:
+    /{stationToSearch}:
+        get:
+            summary: 'Returns a list of stations based on the name passed in parameters.'
+            parameters:
+                - in: path
+                  name: stationToSearch
+                  schema:
+                  type: string
+                  required: true
+                  description: The station to search
+            description: 'Returns a list of stations based on the name passed in parameters.'
+            produces:
+                - 'application/json'
+            responses:
+                200:
+                    description: 'A list of stations.'
+                    schema:
+                        type: 'array'
+                        items:
+                            type: 'object'
+                            properties:
+                                gpsCoordinates:
+                                    type: 'array'
+                                    description: 'gps coordinates.'
+                                    items:
+                                        type: 'float'
+                                name:
+                                    type: 'string'
+                                    description: 'The name of the station as recieved from /api/records/1.0/search.'
+                                description:
+                                    type: 'string'
+                                    description: 'The description of the station as recieved from /api/records/1.0/search.'
+                                internalId:
+                                    type: 'integer'
+                                    description: 'The id of the station as recieved from /api/records/1.0/search.'
