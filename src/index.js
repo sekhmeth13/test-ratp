@@ -37,7 +37,7 @@ app.get('/:name', async function(req, res) {
             
         })
         const records = []
-        const uniqueFields = []
+        let duplicatedCount = 0
         data.records.forEach(station => {
             const {recordid, fields} = station
             
@@ -47,15 +47,24 @@ app.get('/:name', async function(req, res) {
                 description: fields.stop_desc,
                 internalId: fields.stop_id
             }
-            if(records.find(record => {
-                record.name == fields.stop_name && record.description == fields.stop_description && record.gpsCoordinates == fields.stop_coordinates
-            })) {
-                recordToInsert.duplicated = true
+            const indexExistingRecord = records.findIndex(record => {
+                return record.name == fields.stop_name && 
+                    record.description == fields.stop_desc &&
+                    record.gpsCoordinates.length === fields.stop_coordinates.length &&
+                    record.gpsCoordinates.every((value, index) => value === fields.stop_coordinates[index])
+            })
+
+            if(indexExistingRecord != -1) {
+                if(!records[indexExistingRecord].hasOwnProperty('numberOfDuplicates')){
+                    records[indexExistingRecord].numberOfDuplicates = 1
+                } else {
+                    records[indexExistingRecord].numberOfDuplicates += 1
+                }
             }
             records.push(recordToInsert)
         });
 
-        res.send(JSON.stringify(records), 200)
+        res.status(200).send(JSON.stringify(records), 200)
     } catch (error) {
         console.error(error);
     }
